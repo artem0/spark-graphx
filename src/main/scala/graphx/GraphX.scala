@@ -3,6 +3,9 @@ package graphx
 import org.apache.spark._
 import org.apache.spark.graphx.{Graph, _}
 
+import scala.collection.mutable.ListBuffer
+
+
 object InputDataFlow {
 
   def parseNames(line: String): Option[(VertexId, String)] = {
@@ -13,7 +16,6 @@ object InputDataFlow {
   }
 
   def makeEdges(line: String) : List[Edge[Int]] = {
-    import scala.collection.mutable.ListBuffer
     var edges = new ListBuffer[Edge[Int]]()
     val fields = line.split(" ")
     val origin = fields(0)
@@ -25,19 +27,34 @@ object InputDataFlow {
 }
 
 class GraphX(sc: SparkContext) {
-  private def verts = sc.textFile(USER_NAMES_FILE).flatMap(InputDataFlow.parseNames)
+  private def verts = sc.textFile(USER_NAMES).flatMap(InputDataFlow.parseNames)
 
-  private def edges = sc.textFile(USER_GRAPH_FILE).flatMap(InputDataFlow.makeEdges)
+  private def edges = sc.textFile(USER_GRAPH).flatMap(InputDataFlow.makeEdges)
 
+  /**
+    * Build social graph from verts and edges
+    * stored in tsv files
+    * @return build graph
+    */
   private def graph = Graph(verts, edges).cache()
 
-
+  /**
+    * Find most connected user grpah.degrees
+    * @param amount threshold for returning first n user
+    * @return most connected user in social graph
+    */
   def getMostConnectedUsers(amount:Int): Array[(VertexId, (PartitionID, String))] = {
     graph.degrees.join(verts)
       .sortBy( {case( (_, (userName, _))) => userName }, ascending=false ).take(amount)
   }
 
-  private def getBfs(root:VertexId) = {
+  /**
+    * Represent breadth-first search statement of social graph
+    * via delegation to Pregel algorithm starting from the edge root
+    * @param root The point of departure in BFS
+    * @return breadth-first search statement
+    */
+  private def getBFS(root:VertexId) = {
     val initialGraph = graph.mapVertices((id, _) => if (id == root) 0.0 else Double.PositiveInfinity)
 
     val bfs = initialGraph.pregel(Double.PositiveInfinity, 10)(
@@ -53,14 +70,26 @@ class GraphX(sc: SparkContext) {
     bfs
   }
 
-  def degreeOfSeparationSingleUser(root:VertexId) = {
-    getBfs(root).vertices.join(verts).take(100)
+  /**
+    *  Degree of separation for single user
+    *  as adapter to getBfs
+    * @param root The point of departure in BFS
+    * @return Degree of separation for the user
+    */
+  def degreeOfSeparationSingleUser(root:VertexId): Array[(VertexId, (Double, String))] = {
+    getBFS(root).vertices.join(verts).take(100)
   }
 
-  def degreeOfSeparationTwoUser(firstUser:VertexId, secondUser:VertexId ) = {
-    getBfs(firstUser)
+  /**
+    * Degree of separation between two user
+    * @param firstUser VertexId for the first user
+    * @param secondUser VertexId for the second user
+    * @return Degree of separation for the users
+    */
+  def degreeOfSeparationTwoUser(firstUser:VertexId, secondUser:VertexId) = {
+    getBFS(firstUser)
       .vertices
       .filter{case (vertexId, _) => vertexId == secondUser}
-      .collect
+      .collect.map{case (_, degree) => degree}
   }
 }
