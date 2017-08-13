@@ -39,7 +39,7 @@ class GraphX(sc: SparkContext) {
   private def graph = Graph(verts, edges).cache()
 
   /**
-    * Find most connected user grpah.degrees
+    * Find most connected user graph.degrees
     * @param amount threshold for returning first n user
     * @return most connected user in social graph
     */
