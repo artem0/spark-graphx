@@ -5,7 +5,6 @@ import org.apache.spark.graphx.{Graph, _}
 
 import scala.collection.mutable.ListBuffer
 
-
 object InputDataFlow {
 
   def parseNames(line: String): Option[(VertexId, String)] = {
@@ -15,18 +14,23 @@ object InputDataFlow {
     else None
   }
 
-  def makeEdges(line: String) : List[Edge[Int]] = {
+  def makeEdges(line: String): List[Edge[Int]] = {
     var edges = new ListBuffer[Edge[Int]]()
     val fields = line.split(" ")
     val origin = fields(0)
     (1 until fields.length)
-      .foreach { p => edges += Edge(origin.toLong, fields(p).toLong, 0) }
+      .foreach { p =>
+        edges += Edge(origin.toLong, fields(p).toLong, 0)
+      }
     edges.toList
   }
 
 }
 
 class GraphX(sc: SparkContext) {
+  type ConnectedUser = (PartitionID, String)
+  type DegreeOfSeparation = (Double, String)
+
   private def verts = sc.textFile(USER_NAMES).flatMap(InputDataFlow.parseNames)
 
   private def edges = sc.textFile(USER_GRAPH).flatMap(InputDataFlow.makeEdges)
@@ -43,9 +47,10 @@ class GraphX(sc: SparkContext) {
     * @param amount threshold for returning first n user
     * @return most connected user in social graph
     */
-  def getMostConnectedUsers(amount:Int): Array[(VertexId, (PartitionID, String))] = {
+  def getMostConnectedUsers(amount: Int): Array[(VertexId, ConnectedUser)] = {
     graph.degrees.join(verts)
-      .sortBy( {case( (_, (userName, _))) => userName }, ascending=false ).take(amount)
+      .sortBy({ case ((_, (userName, _))) => userName }, ascending = false)
+      .take(amount)
   }
 
   /**
@@ -54,42 +59,43 @@ class GraphX(sc: SparkContext) {
     * @param root The point of departure in BFS
     * @return breadth-first search statement
     */
-  private def getBFS(root:VertexId) = {
-    val initialGraph = graph.mapVertices((id, _) => if (id == root) 0.0 else Double.PositiveInfinity)
+  private def getBFS(root: VertexId) = {
+    val initialGraph = graph.mapVertices((id, _) =>
+      if (id == root) 0.0 else Double.PositiveInfinity)
 
     val bfs = initialGraph.pregel(Double.PositiveInfinity, 10)(
       (_, attr, msg) => math.min(attr, msg),
       triplet => {
         if (triplet.srcAttr != Double.PositiveInfinity) {
-          Iterator((triplet.dstId, triplet.srcAttr+1))
+          Iterator((triplet.dstId, triplet.srcAttr + 1))
         } else {
           Iterator.empty
         }
       },
-      (a,b) => math.min(a,b)).cache()
+      (a, b) => math.min(a, b)).cache()
     bfs
   }
 
   /**
-    *  Degree of separation for single user
-    *  as adapter to getBfs
+    * Degree of separation for the single user
+    * as adapter to getBfs
     * @param root The point of departure in BFS
     * @return Degree of separation for the user
     */
-  def degreeOfSeparationSingleUser(root:VertexId): Array[(VertexId, (Double, String))] = {
+  def degreeOfSeparationSingleUser(root: VertexId): Array[(VertexId, DegreeOfSeparation)] = {
     getBFS(root).vertices.join(verts).take(100)
   }
 
   /**
     * Degree of separation between two user
-    * @param firstUser VertexId for the first user
+    * @param firstUser  VertexId for the first user
     * @param secondUser VertexId for the second user
     * @return Degree of separation for the users
     */
-  def degreeOfSeparationTwoUser(firstUser:VertexId, secondUser:VertexId) = {
+  def degreeOfSeparationTwoUser(firstUser: VertexId, secondUser: VertexId) = {
     getBFS(firstUser)
       .vertices
-      .filter{case (vertexId, _) => vertexId == secondUser}
-      .collect.map{case (_, degree) => degree}
+      .filter { case (vertexId, _) => vertexId == secondUser }
+      .collect.map { case (_, degree) => degree }
   }
 }
