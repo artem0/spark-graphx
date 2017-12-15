@@ -1,4 +1,4 @@
-package graphx
+package com.github.graphx.social
 
 import org.apache.spark._
 import org.apache.spark.graphx.{Graph, _}
@@ -27,7 +27,7 @@ object InputDataFlow {
 
 }
 
-class GraphX(sc: SparkContext) {
+class SocialGraph(sc: SparkContext) {
   type ConnectedUser = (PartitionID, String)
   type DegreeOfSeparation = (Double, String)
 
