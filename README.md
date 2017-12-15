@@ -1,6 +1,8 @@
-## Spark GraphX showcase
-## Spark 2.0 GraphX Social graph analysis
+## Spark 2.0 GraphX - Pregel
 
+## Pregel
+
+### Social graph analysis
 Example of the usage Apache Spark for analysis of social graph of users - 
 like social network with model friend to friend with fake user names.
 Also you can consider this example in terms of network theory like p2p with substitution of users
@@ -17,7 +19,7 @@ format `user_id -> user_name`, necessary for joining with graph of contacts.
 It can be treated as a simple tuple - id from `UserGraph.txt` and name of vertex of graph.
 Names of user are random, any coincidence  are accidental.
 
-Examples contains searching of:
+Manipulations with a social graph:
  1) Most connected user in social graph based on graph degrees.
  2) Degree of separation for single user based on [Breadth-first search](https://en.wikipedia.org/wiki/Breadth-first_search)
  with [Pregel](https://stanford.edu/~rezab/classes/cme323/S15/notes/lec8.pdf).
@@ -26,7 +28,39 @@ Examples contains searching of:
  based on Breadth first search with Pregel.
  Input is two user's ids - output is degree of separation between them. 
 
-All examples you can find in `com.github.graphx.pregel.social.demo.SocialGraphDemo`, 
+Example with social graph you can find in `com.github.graphx.pregel.social.demo.SocialGraphDemo`, 
 Launching with `SBT`:
 
 `sbt runMain com.github.graphx.pregel.social.demo.SocialGraphDemo`
+
+### Shortest path problem with Dijkstra’s algorithm
+In graph theory, the [shortest path problem](https://en.wikipedia.org/wiki/Shortest_path_problem) is the problem of 
+finding a path between two vertices (or nodes) in a graph such that the sum of the weights of its constituent edges 
+is minimized.
+
+This project solves `shortest path problem` with [Dijkstra's 
+algorithm](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm) with relying on **Pregel algorithm** for
+propagating messages.
+
+The next code snapshot demonstrates how easy you can implement similar algorithms:
+
+```scala
+initialGraph.pregel(Double.PositiveInfinity)(
+      (_, dist, newDist) => math.min(dist, newDist),
+      triplet => {
+        //Distance accumulator
+        if (triplet.srcAttr + triplet.attr < triplet.dstAttr) {
+          Iterator((triplet.dstId, triplet.srcAttr + triplet.attr))
+        } else {
+          Iterator.empty
+        }
+      },
+      (a, b) => math.min(a, b)
+    )
+```
+
+Launching with `SBT`:
+
+`sbt runMain com.github.graphx.pregel.ssp.demo.ShortestPathProblemDemo`
+
+### Licence: GNU General Public License v3.0
