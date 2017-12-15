@@ -26,7 +26,7 @@ Examples contains searching of:
  based on Breadth first search with Pregel.
  Input is two user's ids - output is degree of separation between them. 
 
-All examples you can find in `com.github.graphx.social.demo.SocialGraphDemo`, 
+All examples you can find in `com.github.graphx.pregel.social.demo.SocialGraphDemo`, 
 Launching with `SBT`:
 
-`sbt runMain com.github.graphx.social.demo.SocialGraphDemo`
+`sbt runMain com.github.graphx.pregel.social.demo.SocialGraphDemo`

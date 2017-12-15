@@ -1,6 +1,6 @@
-package com.github.graphx.social.demo
+package com.github.graphx.pregel.social.demo
 
-import com.github.graphx.social.SocialGraph
+import com.github.graphx.pregel.social.SocialGraph
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.SparkContext
 

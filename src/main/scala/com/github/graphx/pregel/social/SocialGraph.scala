@@ -1,7 +1,8 @@
-package com.github.graphx.social
+package com.github.graphx.pregel.social
 
 import org.apache.spark._
 import org.apache.spark.graphx.{Graph, _}
+import org.apache.spark.rdd.RDD
 
 import scala.collection.mutable.ListBuffer
 
@@ -31,9 +32,9 @@ class SocialGraph(sc: SparkContext) {
   type ConnectedUser = (PartitionID, String)
   type DegreeOfSeparation = (Double, String)
 
-  private def verts = sc.textFile(USER_NAMES).flatMap(InputDataFlow.parseNames)
+  private def verts: RDD[(VertexId, String)] = sc.textFile(USER_NAMES).flatMap(InputDataFlow.parseNames)
 
-  private def edges = sc.textFile(USER_GRAPH).flatMap(InputDataFlow.makeEdges)
+  private def edges: RDD[Edge[PartitionID]] = sc.textFile(USER_GRAPH).flatMap(InputDataFlow.makeEdges)
 
   /**
     * Build social graph from verts and edges
@@ -63,7 +64,7 @@ class SocialGraph(sc: SparkContext) {
     val initialGraph = graph.mapVertices((id, _) =>
       if (id == root) 0.0 else Double.PositiveInfinity)
 
-    val bfs = initialGraph.pregel(Double.PositiveInfinity, 10)(
+    val bfs = initialGraph.pregel(Double.PositiveInfinity, maxIterations = 10)(
       (_, attr, msg) => math.min(attr, msg),
       triplet => {
         if (triplet.srcAttr != Double.PositiveInfinity) {

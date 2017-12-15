@@ -1,4 +1,4 @@
-package com.github.graphx
+package com.github.graphx.pregel
 
 package object social {
 
