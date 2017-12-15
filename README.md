@@ -27,6 +27,8 @@ Manipulations with a social graph:
  3) Degree of separation between two defined users, as degree of separation for the single user, it's
  based on Breadth first search with Pregel.
  Input is two user's ids - output is degree of separation between them. 
+ 4) [Connected component](https://en.wikipedia.org/wiki/Connected_component_(graph_theory)) for social
+ graph - under the hood it delegates to Pregel.
 
 Example with social graph you can find in `com.github.graphx.pregel.social.demo.SocialGraphDemo`, 
 Launching with `SBT`:

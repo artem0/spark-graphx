@@ -20,5 +20,10 @@ object SocialGraphDemo {
 
     println("Computing degrees of separation for user Arch and Fred")
     graph.degreeOfSeparationTwoUser(5306, 14) foreach println
+
+    println("Connected component")
+    graph.connectedComponentGroupedByUsers
+      .sortBy ( {case (_, lowestVertexId) => lowestVertexId},
+        ascending = false).take(10) foreach println
   }
 }

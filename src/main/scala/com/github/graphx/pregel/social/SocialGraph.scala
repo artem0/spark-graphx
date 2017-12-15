@@ -99,4 +99,19 @@ class SocialGraph(sc: SparkContext) {
       .filter { case (vertexId, _) => vertexId == secondUser }
       .collect.map { case (_, degree) => degree }
   }
+
+  /**
+    * Compute the connected component membership of each vertex,
+    * id of component is the lowest vertex id in a certain component
+    * @return Tuple vertex id - lowest vertex id in a component
+    */
+  def connectedComponent = graph.connectedComponents().vertices
+
+  /**
+    * Compute the connected component with join in usernames
+    */
+  def connectedComponentGroupedByUsers =
+    verts.join(connectedComponent).map {
+      case (_, (username, comp)) => (username, comp)
+    }
 }
