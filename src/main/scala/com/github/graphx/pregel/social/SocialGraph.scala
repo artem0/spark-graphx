@@ -114,4 +114,9 @@ class SocialGraph(sc: SparkContext) {
     verts.join(connectedComponent).map {
       case (_, (username, comp)) => (username, comp)
     }
+
+  /**
+    * @return Number of triangles passing through each vertex.
+    */
+  def socialGraphTriangleCount = graph.triangleCount()
 }

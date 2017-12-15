@@ -29,6 +29,7 @@ Manipulations with a social graph:
  Input is two user's ids - output is degree of separation between them. 
  4) [Connected component](https://en.wikipedia.org/wiki/Connected_component_(graph_theory)) for social
  graph - under the hood it delegates to Pregel.
+ 5) Triangle count - the number of triangles passing through each vertex.
 
 Example with social graph you can find in `com.github.graphx.pregel.social.demo.SocialGraphDemo`, 
 Launching with `SBT`:
