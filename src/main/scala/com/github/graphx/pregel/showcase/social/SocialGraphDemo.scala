@@ -1,4 +1,4 @@
-package com.github.graphx.pregel.social.demo
+package com.github.graphx.pregel.showcase.social
 
 import com.github.graphx.pregel.social.SocialGraph
 import org.apache.log4j.{Level, Logger}

@@ -1,4 +1,4 @@
-name := "spark-course"
+name := "spark-graphx"
 
 version := "1.0"
 

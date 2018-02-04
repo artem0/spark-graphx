@@ -1,7 +1,6 @@
-package com.github.graphx.pregel.ssp.demo
+package com.github.graphx.pregel.showcase.ssp
 
 import com.github.graphx.pregel.ssp.ShortestPathProblem
-import com.github.graphx.pregel.ssp.demo.ShortestPathProblemDemo.ssp
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.SparkContext
 import org.apache.spark.graphx.VertexId
