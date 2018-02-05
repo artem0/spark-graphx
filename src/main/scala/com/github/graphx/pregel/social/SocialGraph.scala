@@ -32,16 +32,16 @@ class SocialGraph(sc: SparkContext) {
   type ConnectedUser = (PartitionID, String)
   type DegreeOfSeparation = (Double, String)
 
-  private def verts: RDD[(VertexId, String)] = sc.textFile(USER_NAMES).flatMap(InputDataFlow.parseNames)
+  def verts: RDD[(VertexId, String)] = sc.textFile(USER_NAMES).flatMap(InputDataFlow.parseNames)
 
-  private def edges: RDD[Edge[PartitionID]] = sc.textFile(USER_GRAPH).flatMap(InputDataFlow.makeEdges)
+  def edges: RDD[Edge[PartitionID]] = sc.textFile(USER_GRAPH).flatMap(InputDataFlow.makeEdges)
 
   /**
     * Build social graph from verts and edges
     * stored in tsv files
     * @return build graph
     */
-  private def graph = Graph(verts, edges).cache()
+  def graph = Graph(verts, edges).cache()
 
   /**
     * Find most connected user graph.degrees
