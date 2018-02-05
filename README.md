@@ -1,6 +1,4 @@
-## Spark 2.0 GraphX - Pregel
-
-## Pregel and PageRank
+## Spark 2.2 Pregel and PageRank
 
 ### Social graph analysis
 Example of the usage Apache Spark for analysis of social graph of users - 
@@ -52,10 +50,10 @@ val dynamicRank = socialGraph.graph.pageRank(tol = 0.0001)
 val iterativeRank = socialGraph.graph.staticPageRank(numIter = 20)
 ```
 
-Example with social graph you can find in `com.github.graphx.pregel.social.demo.SocialGraphDemo`, 
+Example with social graph you can find in `com.github.graphx.pregel.showcase.social.SocialGraphDemo`, 
 Launching with `SBT`:
 
-`sbt runMain com.github.graphx.pregel.showcase.social.demo.SocialGraphDemo`
+`sbt runMain com.github.graphx.pregel.showcase.social.SocialGraphDemo`
 
 ### Shortest path problem with Dijkstra’s algorithm
 In graph theory, the [shortest path problem](https://en.wikipedia.org/wiki/Shortest_path_problem) is the problem of 
