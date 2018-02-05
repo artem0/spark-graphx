@@ -13,15 +13,16 @@ object GraphPageRank extends App {
 
   val socialGraph = new SocialGraph(sc)
   val tolerance = 0.0001
+
   /**
     * Dynamic implementation uses the Pregel interface and runs PageRank until convergence
     */
-  val ranks: VertexRDD[Double] = socialGraph.graph.pageRank(tolerance).vertices
+  val ranks: VertexRDD[Double] = socialGraph.graph.pageRank(tol = tolerance).vertices
 
   /**
     * The standalone Graph interface and runs PageRank for a fixed number of iterations
     */
-  val static: VertexRDD[Double] = socialGraph.graph.staticPageRank(20).vertices
+  val static: VertexRDD[Double] = socialGraph.graph.staticPageRank(numIter = 20).vertices
 
   def handleResult(ranks: VertexRDD[Double]) = {
     socialGraph.verts.join(ranks).map {

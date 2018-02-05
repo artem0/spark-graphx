@@ -1,6 +1,6 @@
 ## Spark 2.0 GraphX - Pregel
 
-## Pregel
+## Pregel and PageRank
 
 ### Social graph analysis
 Example of the usage Apache Spark for analysis of social graph of users - 
@@ -27,14 +27,35 @@ Manipulations with a social graph:
  3) Degree of separation between two defined users, as degree of separation for the single user, it's
  based on Breadth first search with Pregel.
  Input is two user's ids - output is degree of separation between them. 
- 4) [Connected component](https://en.wikipedia.org/wiki/Connected_component_(graph_theory)) for social
+ 4) Measuring importance/rating of users with [PageRank](https://en.wikipedia.org/wiki/PageRank) with two strategies:
+ `iterative` and `until convergence (Pregel based)`. 
+ 5) [Connected component](https://en.wikipedia.org/wiki/Connected_component_(graph_theory)) for social
  graph - under the hood it delegates to Pregel.
- 5) Triangle count - the number of triangles passing through each vertex.
+ 6) Triangle count - the number of triangles passing through each vertex.
+ 
+ 
+### PageRank
+[PageRank](https://www.cs.princeton.edu/~chazelle/courses/BIB/pagerank.htm) measures the importance of each vertex in 
+a social graph. Spark allows to build PageRank with two strategies: `dynamically`, this implementation uses the 
+Pregel interface and runs PageRank `until convergence` and `iterative`, it runs PageRank for a fixed number of iterations.
+Dynamically approach with strategy `until convergence` denotes that computation will continue until
+`[R(t+1)-R(t)] < e`. Convergence is achieved when the error rate for any vertex in the graph falls below 
+a given threshold. The error rate of a vertex is defined as the difference between the “real” score of the vertex `R(Vi)`
+and the score computed at iteration k, `R^K(Vi)` Since the real score is not known apriori, this error rate is 
+approximated with the difference between the scores computed at two successive iterations: `R(t+1)` and `R(t)`.
+
+```scala
+//dynamic version
+val dynamicRank = socialGraph.graph.pageRank(tol = 0.0001)
+
+//iterative version
+val iterativeRank = socialGraph.graph.staticPageRank(numIter = 20)
+```
 
 Example with social graph you can find in `com.github.graphx.pregel.social.demo.SocialGraphDemo`, 
 Launching with `SBT`:
 
-`sbt runMain com.github.graphx.pregel.social.demo.SocialGraphDemo`
+`sbt runMain com.github.graphx.pregel.showcase.social.demo.SocialGraphDemo`
 
 ### Shortest path problem with Dijkstra’s algorithm
 In graph theory, the [shortest path problem](https://en.wikipedia.org/wiki/Shortest_path_problem) is the problem of 
