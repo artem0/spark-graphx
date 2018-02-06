@@ -1,4 +1,4 @@
-## Spark 2.2 Pregel and PageRank
+## Spark 2.2.1 Pregel and PageRank
 
 ### Social graph analysis
 Example of the usage Apache Spark for analysis of social graph of users - 
@@ -80,6 +80,16 @@ initialGraph.pregel(Double.PositiveInfinity)(
       (a, b) => math.min(a, b)
     )
 ```
+
+### Connected Components
+[Connected Components](https://spark.apache.org/docs/latest/graphx-programming-guide.html#connected-components) 
+algorithm labels each connected component of the graph with the ID of its lowest-numbered vertex. 
+For example:
+```scala
+val component = graph.connectedComponents().vertices
+```
+Variable `component` has type `Graph[VertexId, ED]` and contains 
+tuple of vertex id and lowest vertex id in a component.
 
 Launching with `SBT`:
 
