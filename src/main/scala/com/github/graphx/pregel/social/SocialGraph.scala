@@ -26,7 +26,7 @@ class SocialGraph(sc: SparkContext) {
     */
   def getMostConnectedUsers(amount: Int): Array[(VertexId, ConnectedUser)] = {
     graph.degrees.join(verts)
-      .sortBy({ case ((_, (userName, _))) => userName }, ascending = false)
+      .sortBy({ case (_, (userName, _)) => userName }, ascending = false)
       .take(amount)
   }
 
