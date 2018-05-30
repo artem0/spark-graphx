@@ -1,11 +1,11 @@
-package com.github.graphx.pregel.showcase.ssp
+package com.github.graphx.pregel.jobs.ssp
 
 import com.github.graphx.pregel.ssp.ShortestPathProblem
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.SparkContext
 import org.apache.spark.graphx.VertexId
 
-object ShortestPathProblemDemo extends App {
+object ShortestPathProblemJob extends App {
   Logger.getLogger("org").setLevel(Level.ERROR)
   val sc = new SparkContext("local[*]", "ShortestPathProblemDemo")
   val ssp = new ShortestPathProblem(sc)

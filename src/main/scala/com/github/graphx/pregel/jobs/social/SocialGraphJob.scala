@@ -1,10 +1,10 @@
-package com.github.graphx.pregel.showcase.social
+package com.github.graphx.pregel.jobs.social
 
 import com.github.graphx.pregel.social.SocialGraph
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.SparkContext
 
-object SocialGraphDemo {
+object SocialGraphJob {
 
   def main(args: Array[String]): Unit = {
     Logger.getLogger("org").setLevel(Level.ERROR)
