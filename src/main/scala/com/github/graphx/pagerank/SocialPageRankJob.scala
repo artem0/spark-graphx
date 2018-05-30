@@ -5,7 +5,7 @@ import org.apache.log4j.{Level, Logger}
 import org.apache.spark.SparkContext
 import org.apache.spark.graphx.VertexRDD
 
-object GraphPageRank {
+object SocialPageRankJob {
 
   /**
     * Dynamic implementation uses the Pregel interface and runs PageRank until convergence
@@ -30,13 +30,13 @@ object GraphPageRank {
     val sc = new SparkContext("local[*]", "PageRank")
 
     val socialGraph: SocialGraph = new SocialGraph(sc)
-    val tolerance: Double = 0.0001
+    val TOLERANCE: Double = 0.0001
 
     import scala.compat.Platform.{EOL => D}
-    val topUsersDynamically = handleResult(socialGraph, ranks(socialGraph, tolerance)).mkString(D)
-    val topUsersIterative = handleResult(socialGraph, static(socialGraph, tolerance)).mkString(D)
+    val topUsersDynamically = handleResult(socialGraph, ranks(socialGraph, TOLERANCE)).mkString(D)
+    val topUsersIterative = handleResult(socialGraph, static(socialGraph, TOLERANCE)).mkString(D)
 
-    println(s"Top 10 users in network counted with tolerance until convergence $tolerance - $D $topUsersDynamically")
+    println(s"Top 10 users in network counted with TOLERANCE until convergence $TOLERANCE - $D $topUsersDynamically")
     println(s"Top 10 users in the network counted iteratively - $D $topUsersIterative")
 
     sc.stop()
