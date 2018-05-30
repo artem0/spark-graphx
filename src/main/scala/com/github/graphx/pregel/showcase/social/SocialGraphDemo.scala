@@ -25,5 +25,7 @@ object SocialGraphDemo {
     graph.connectedComponentGroupedByUsers
       .sortBy ( {case (_, lowestVertexId) => lowestVertexId},
         ascending = false).take(10) foreach println
+
+    sc.stop()
   }
 }
